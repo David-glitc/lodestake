@@ -1,0 +1,28 @@
+{
+  "name": "oarmine",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "contracts:build": "cd contracts && forge build",
+    "test": "cd contracts && forge test",
+    "build": "node scripts/build.mjs",
+    "preflight": "node scripts/preflight.mjs",
+    "deploy:contracts": "node scripts/deploy.mjs",
+    "deploy:sites": "node scripts/deploy-sites.mjs",
+    "preview": "node scripts/preview.mjs",
+    "check:browser": "node scripts/browser-check.mjs",
+    "fork:check": "node scripts/fork-check.mjs",
+    "publish": "python3 scripts/publish.py"
+  },
+  "dependencies": {
+    "viem": "2.55.19"
+  },
+  "devDependencies": {
+    "esbuild": "0.28.2",
+    "@playwright/test": "1.56.1"
+  },
+  "description": "A pooled grid game using WBOT. Play a tile, settle the round, and claim your payout.",
+  "license": "MIT",
+  "repository": "https://github.com/David-glitc/oarmine",
+  "homepage": "https://oarmine-botchain.davidopuene8.workers.dev"
+}

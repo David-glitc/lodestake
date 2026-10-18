@@ -1,0 +1,9 @@
+{
+  "localOnly": true,
+  "chainId": 677,
+  "checkedAt": "2026-10-18T13:13:53.156Z",
+  "oarmine": {
+    "round": "1",
+    "flow": "wrap → approve → stake → settle → refund claim"
+  }
+}
