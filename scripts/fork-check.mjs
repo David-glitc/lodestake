@@ -18,6 +18,6 @@ async function fundUSDT(n){const holder='0x64F418471a1A7932a190E10da5A8551dB5Abe
  await c.request({method:'anvil_impersonateAccount',params:[holder]});await c.request({method:'anvil_setBalance',params:[holder,toHex(parseEther('1'))]});
  const hash=await c.request({method:'eth_sendTransaction',params:[{from:holder,to:i.USDT,gas:'0x30d40',data:encodeFunctionData({abi,functionName:'transfer',args:[owner.address,n]})}]});
  assert.equal((await c.waitForTransactionReceipt({hash})).status,'success');await c.request({method:'anvil_stopImpersonatingAccount',params:[holder]});}
-const results={};
-for(const p of products)if(p.fork){results[p.slug]=await p.fork({c,abi,i,tx,write,read,contract,owner,fundUSDT,rpc});console.log(`${p.name}: fork flow passed`);}
+const results={};const ctxArtifact=artifact;
+for(const p of products)if(p.fork){results[p.slug]=await p.fork({c,abi,i,tx,write,read,contract,owner,fundUSDT,rpc,artifact:ctxArtifact});console.log(`${p.name}: fork flow passed`);}
 fs.writeFileSync(new URL('deployments/fork-verification.json',root),stringify({localOnly:true,chainId:677,checkedAt:new Date().toISOString(),...results,receipts}));console.log('Fork checks passed. No mainnet writes.');

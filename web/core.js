@@ -1,4 +1,6 @@
-import {createPublicClient,createWalletClient,custom,http,defineChain,parseAbi,parseUnits,formatUnits,isAddress} from 'viem';
+import {createPublicClient,createWalletClient,custom,http,defineChain,parseAbi,parseUnits,formatUnits,isAddress,getAddress} from 'viem';
+// Wallets may return lowercase or non-checksummed addresses; normalize before use.
+const norm=a=>a?getAddress(a.toLowerCase()):null;
 export const config=APP,abis=ABIS;
 export const chain=defineChain({id:677,name:'BOT Chain',nativeCurrency:{name:'BOT',symbol:'BOT',decimals:18},rpcUrls:{default:{http:[config.rpc]}},blockExplorers:{default:{name:'BOTScan',url:'https://scan.botchain.ai'}}});
 export const client=createPublicClient({chain,transport:http(config.rpc,{timeout:20000,retryCount:1})});
@@ -21,6 +23,8 @@ export function address(value){if(!isAddress(value))throw Error('Enter a valid 0
 export function amount(value,decimals=18){if(!/^\d+(\.\d+)?$/.test(value)||((value.split('.')[1]||'').length>decimals))throw Error(`Use a positive number with at most ${decimals} decimal places.`);const n=parseUnits(value,decimals);if(n<=0n)throw Error('Amount must be greater than zero.');return n;}
 export function integer(value){if(!/^\d+$/.test(value))throw Error('Use a whole number.');return BigInt(value);}
 export const read=(name,fn,args=[],addr=config.contracts[name])=>client.readContract({address:addr,abi:abis[name],functionName:fn,args});
+/** Latest block time in seconds. Deadlines use chain time so a skewed device clock cannot break them. */
+export const chainTime=async()=>Number((await client.getBlock()).timestamp);
 
 // EIP-6963 discovery lists every installed wallet (BO Wallet, MetaMask, OKX, Rabby…); window.ethereum is the fallback.
 const wallets=new Map();
@@ -41,9 +45,9 @@ function choose(){
 }
 export async function connect(){
  if(!provider){const picked=await choose();provider=picked.provider;
-  provider.on?.('accountsChanged',accounts=>{state.account=accounts[0]||null;$('connect').textContent=state.account?short(state.account):'Connect wallet';run(refresh);});
+  provider.on?.('accountsChanged',accounts=>{state.account=norm(accounts[0]);$('connect').textContent=state.account?short(state.account):'Connect wallet';run(refresh);});
   provider.on?.('chainChanged',()=>status('Wallet network changed. Transactions require BOT Chain 677.'));}
- [state.account]=await provider.request({method:'eth_requestAccounts'});$('connect').textContent=short(state.account);return state.account;
+ state.account=norm((await provider.request({method:'eth_requestAccounts'}))[0]);$('connect').textContent=short(state.account);return state.account;
 }
 export async function addChain(){if(!provider)await connect();try{await provider.request({method:'wallet_switchEthereumChain',params:[{chainId:'0x2a5'}]});}catch(e){if(e.code!==4902&&e?.data?.originalError?.code!==4902)throw e;await provider.request({method:'wallet_addEthereumChain',params:[chainParams]});}status('Your wallet is on BOT Chain mainnet (677).');}
 async function wallet(){
@@ -51,14 +55,16 @@ async function wallet(){
  if(!state.account)await connect();
  if(Number(await provider.request({method:'eth_chainId'}))!==677)await addChain();
  if(Number(await provider.request({method:'eth_chainId'}))!==677)throw Error('Switch your wallet to BOT Chain mainnet (677).');
- [state.account]=await provider.request({method:'eth_accounts'});if(!state.account)throw Error('Wallet disconnected.');
+ state.account=norm((await provider.request({method:'eth_accounts'}))[0]);if(!state.account)throw Error('Wallet disconnected.');
  return createWalletClient({account:state.account,chain,transport:custom(provider)});
 }
 export {wallet};
 export async function transact(abi,addr,fn,args=[],value=0n){
  const w=await wallet();status('Checking transaction…');
  const {request}=await client.simulateContract({account:state.account,address:addr,abi,functionName:fn,args,value});
- status('Confirm the transaction in your wallet.');const hash=await w.writeContract(request);status(`Waiting for confirmation: ${hash}`);
+ // 25% gas headroom: tight wallet estimates can fail on first-time storage writes (for example vote checkpoints).
+ const gas=await client.estimateContractGas({account:state.account,address:addr,abi,functionName:fn,args,value});
+ status('Confirm the transaction in your wallet.');const hash=await w.writeContract({...request,gas:gas*125n/100n});status(`Waiting for confirmation: ${hash}`);
  const receipt=await client.waitForTransactionReceipt({hash,timeout:180000});if(receipt.status!=='success')throw Error(`Transaction reverted: ${hash}`);
  status(`Confirmed: ${hash}`);return receipt;
 }
@@ -70,10 +76,12 @@ export const mine=a=>!!state.account&&a?.toLowerCase()===state.account.toLowerCa
 
 let product;
 async function run(fn){if(busy)return;busy=true;$('workspace').setAttribute('aria-busy','true');try{await fn();await refresh();}catch(e){status(e.shortMessage||e.message||'The request failed. Please retry.',true);}finally{busy=false;$('workspace').removeAttribute('aria-busy');}}
+let renderSeq=0;
 async function refresh(){
  if(!state.verified){$('records').innerHTML='<p class="empty">This BOT Chain app is awaiting its mainnet contract deployment. Transactions unlock once the deployment is verified.</p>';return;}
- $('records').setAttribute('aria-busy','true');
- try{$('records').innerHTML=await product.render();}finally{$('records').removeAttribute('aria-busy');}
+ // A slower, older render (for example from before the wallet connected) must never overwrite a newer one.
+ const seq=++renderSeq;$('records').setAttribute('aria-busy','true');
+ try{const html=await product.render();if(seq===renderSeq)$('records').innerHTML=html;}finally{if(seq===renderSeq)$('records').removeAttribute('aria-busy');}
 }
 async function boot(){
  if(!config.ready){status('Deployment pending — mainnet transactions are not enabled yet.');await refresh();return;}

@@ -2,7 +2,7 @@ import {$,config,state,esc,fmt,button,action,field,form,amount,read,tx,approve,c
 let selectedTile=0;
 function controls(){
  $('list-title').textContent='The mine';
- $('controls').innerHTML='<h2>Deploy on a tile</h2><p>Select a tile on the grid, then enter your WBOT stake.</p>'+form('stake',field('stake','Amount (WBOT)','0.01','text','inputmode="decimal"'),'Deploy WBOT',async f=>{const n=amount(f.stake);await approve(config.infrastructure.WBOT,config.contracts.OarMine,n);await tx('OarMine','deploy',[selectedTile,n]);})+wrapForms();
+ $('controls').innerHTML='<h2>Deploy on a tile</h2><p>Select a tile on the grid, then enter your WBOT stake.</p>'+form('stake',field('stake','Amount (WBOT)','0.01','text','inputmode="decimal"'),'Deploy WBOT',async f=>{const n=amount(f.stake);const r=await read('OarMine','getRound',[await read('OarMine','currentRoundId')]);if(Number((await client.getBlock()).timestamp)>=Number(r.endTime))throw Error('This round\'s deploy window has closed. Request settlement below to open the next round, then stake.');await approve(config.infrastructure.WBOT,config.contracts.OarMine,n);await tx('OarMine','deploy',[selectedTile,n]);})+wrapForms();
  $('rules').innerHTML='<ul><li>One tile per wallet per round; a round lasts two minutes.</li><li>5% of losing stakes goes to the treasury. Winners split the remainder in proportion to their stake on the winning tile.</li><li>Solo rounds refund the full stake. Anyone can request and finalize settlement.</li><li>The winner uses a fixed future block hash, not a VRF. Validators can influence this randomness.</li><li>If settlement expires after 256 blocks, every player receives a refund. House staking is disabled.</li></ul>';
 }
 async function render(){

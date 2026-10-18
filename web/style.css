@@ -44,3 +44,9 @@ dialog h2{margin-bottom:8px}
 dialog form>button{width:100%}
 @media(max-width:860px){.site-nav{display:none}.steps,.features,.facts{grid-template-columns:1fr}.site-footer{grid-template-columns:1fr}}
 @media(max-width:760px){.band{padding:44px 0}.header-actions{gap:8px}#add-chain{display:none}}
+.basket{display:flex;gap:3px;margin:12px 0 14px;border-radius:6px;overflow:hidden}
+.basket span{background:#25302a;border-top:3px solid var(--accent);padding:7px 8px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.weights{border:1px solid var(--line);border-radius:8px;padding:4px 14px 12px;margin:18px 0 0}
+.weights legend{font-size:12px;font-weight:600;padding:0 6px}
+.tiny.error{color:#e2a49c}
+.holdings{margin:6px 0 10px}
