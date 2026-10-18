@@ -1,5 +1,5 @@
 {
-  "name": "oarmine",
+  "name": "lodestake",
   "private": true,
   "type": "module",
   "scripts": {
@@ -23,6 +23,6 @@
   },
   "description": "A pooled grid game using WBOT. Play a tile, settle the round, and claim your payout.",
   "license": "MIT",
-  "repository": "https://github.com/David-glitc/oarmine",
-  "homepage": "https://oarmine-botchain.davidopuene8.workers.dev"
+  "repository": "https://github.com/David-glitc/lodestake",
+  "homepage": "https://lodestake-botchain.davidopuene8.workers.dev"
 }

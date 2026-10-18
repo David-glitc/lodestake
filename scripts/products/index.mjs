@@ -1,2 +1,2 @@
-import oarmine from './oarmine.mjs';
-export default [oarmine];
+import lodestake from './lodestake.mjs';
+export default [lodestake];

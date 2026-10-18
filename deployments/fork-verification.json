@@ -1,8 +1,8 @@
 {
   "localOnly": true,
   "chainId": 677,
-  "checkedAt": "2026-10-18T20:24:44.255Z",
-  "oarmine": {
+  "checkedAt": "2026-10-18T22:51:29.635Z",
+  "lodestake": {
     "round": "2",
     "flow": "wrap → approve → stake → settle → refund claim"
   }

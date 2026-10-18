@@ -3,11 +3,11 @@ pragma solidity ^0.8.24;
 
 import {IERC20} from "./interfaces/IERC20.sol";
 
-/// @title OarMine
-/// @notice 3x3 timed grid. Deploy $OAR on tiles. Settlement is commit → wait → multi-source reveal.
+/// @title Lodestake
+/// @notice 3x3 timed grid. Deploy WBOT on tiles. Settlement is commit → wait → multi-source reveal.
 ///         Fees are owner-settable (capped). Solo/empty-winner refunds use refundFeeBps.
 ///         Owner/keeper may push claims via claimFor / claimMany and rescueOar.
-contract OarMine {
+contract Lodestake {
     uint8 public constant TILE_COUNT = 9;
     uint256 public constant BPS = 10_000;
     /// @dev Hard caps so setters cannot set absurd fees.
@@ -19,7 +19,7 @@ contract OarMine {
     uint256 public constant HOUSE_SEED_TOTAL = 1_000 ether;
     uint8 public constant HOUSE_SEED_TILE_COUNT = 2;
 
-    IERC20 public immutable oar;
+    IERC20 public immutable stakeToken;
     address public treasury;
     address public owner;
     uint256 public houseReserve;
@@ -119,9 +119,9 @@ contract OarMine {
         _;
     }
 
-    constructor(address oarToken, address treasury_) {
-        if (oarToken == address(0) || treasury_ == address(0)) revert ZeroAddress();
-        oar = IERC20(oarToken);
+    constructor(address stakeToken_, address treasury_) {
+        if (stakeToken_ == address(0) || treasury_ == address(0)) revert ZeroAddress();
+        stakeToken = IERC20(stakeToken_);
         treasury = treasury_;
         owner = msg.sender;
         _startRound();
@@ -138,7 +138,7 @@ contract OarMine {
         }
         if (playerRoundTotal[roundId][msg.sender] > 0) revert AlreadyDeployed();
 
-        if (!oar.transferFrom(msg.sender, address(this), amount)) revert TransferFailed();
+        if (!stakeToken.transferFrom(msg.sender, address(this), amount)) revert TransferFailed();
 
         tileTotals[roundId][tile] += amount;
         playerTileDeposits[roundId][msg.sender][tile] += amount;
@@ -290,7 +290,7 @@ contract OarMine {
         round.refundFeeBpsApplied = feeBpsApplied;
 
         if (fee > 0) {
-            if (!oar.transfer(treasury, fee)) revert TransferFailed();
+            if (!stakeToken.transfer(treasury, fee)) revert TransferFailed();
         }
 
         emit RoundRefunded(roundId, round.winningTile, total, fee, round.uniquePlayers);
@@ -311,7 +311,7 @@ contract OarMine {
         round.winningTileTotal = winningTotal;
 
         if (fee > 0) {
-            if (!oar.transfer(treasury, fee)) revert TransferFailed();
+            if (!stakeToken.transfer(treasury, fee)) revert TransferFailed();
         }
 
         uint256 houseOnWinner = playerTileDeposits[roundId][address(this)][winningTile];
@@ -321,7 +321,7 @@ contract OarMine {
                 housePayout += (round.winnerPool * houseOnWinner) / round.winningTileTotal;
             }
             round.housePayout = housePayout;
-            if (!oar.transfer(treasury, housePayout)) revert TransferFailed();
+            if (!stakeToken.transfer(treasury, housePayout)) revert TransferFailed();
             emit HousePayout(roundId, housePayout);
         }
 
@@ -379,7 +379,7 @@ contract OarMine {
 
         claimed[roundId][player] = true;
         if (payout > 0) {
-            if (!oar.transfer(player, payout)) revert TransferFailed();
+            if (!stakeToken.transfer(player, payout)) revert TransferFailed();
         }
         emit Claimed(roundId, player, payout);
     }
@@ -453,11 +453,11 @@ contract OarMine {
     ///         The treasury must approve this mine before the owner calls it.
     function fundHouseReserve(uint256) external pure { revert("BOT port: house disabled"); }
     function rescueToken(address token, address to, uint256 amount) external onlyOwner {
-        require(token != address(oar), "Cannot withdraw player stakes");
+        require(token != address(stakeToken), "Cannot withdraw player stakes");
         if(to == address(0)) revert ZeroAddress();
         if(!IERC20(token).transfer(to,amount)) revert TransferFailed();
     }
-    function withdrawOar(address, uint256) external pure { revert("Cannot withdraw player stakes"); }
+    function withdrawStakeToken(address, uint256) external pure { revert("Cannot withdraw player stakes"); }
 
     function transferOwnership(address newOwner) external onlyOwner {
         if (newOwner == address(0)) revert ZeroAddress();
