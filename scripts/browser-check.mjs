@@ -1,9 +1,9 @@
 import {chromium} from '@playwright/test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {products,stringify} from './config.mjs';
-// BOT_SITE_BASE checks published sites, e.g. https://{slug}-botchain.example.workers.dev; default is `npm run preview`.
-const base=(p,index)=>process.env.BOT_SITE_BASE?process.env.BOT_SITE_BASE.replace('{slug}',p.slug):`http://127.0.0.1:${8771+index}`;
+import {products,deployedNames,siteURL,stringify} from './config.mjs';
+// BOT_SITE_BASE=live checks the published sites; a template like https://{slug}.example.com checks another host; default is `npm run preview`.
+const base=(p,index)=>process.env.BOT_SITE_BASE==='live'?siteURL(p):process.env.BOT_SITE_BASE?process.env.BOT_SITE_BASE.replace('{slug}',p.slug):`http://127.0.0.1:${8771+index}`;
 const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
 fs.mkdirSync('evidence',{recursive:true});const results=[];
 try{
@@ -20,6 +20,11 @@ try{
   assert(await footer.locator('a[href="https://www.botchain.ai/"]').count()>=2,'BOT Chain website link missing');
   assert.equal(await footer.locator('a[href="https://scan.botchain.ai/"]').count(),1,'Explorer link missing');
   assert.equal(await footer.locator(`a[href^="https://github.com/"]`).count(),1,'GitHub link missing');
+  // BOT Chain branding: header badge, contracts section, every asset link pointing at BOT Chain or BOTScan.
+  assert(await page.locator('header a.chain-badge[href="https://www.botchain.ai/"] img[alt="BOT Chain"]').count(),'header BOT Chain badge missing');
+  assert.equal(await page.locator('#contracts .contract').count(),(await deployedNames(product)).length,'contract slots');
+  const assetHrefs=await page.locator('#contracts .assets a').evaluateAll(as=>as.map(a=>a.href));
+  assert(assetHrefs.length===(product.assets||[]).length&&assetHrefs.every(h=>/^https:\/\/(www\.botchain\.ai|scan\.botchain\.ai)\//.test(h)),`asset links: ${assetHrefs}`);
   await noOverflow('landing');await page.screenshot({path:`evidence/${product.slug}-landing-${width}.png`,fullPage:true});
   // App page.
   await page.locator('.hero a.button.primary').click();await page.waitForURL(/\/app\/$/);
@@ -28,6 +33,7 @@ try{
   if(pending){const submit=page.locator('button[type=submit]');for(let n=0;n<await submit.count();n++)assert(await submit.nth(n).isDisabled());}
   await page.getByRole('button',{name:'Connect wallet'}).click();await page.locator('#status').filter({hasText:'No wallet found'}).waitFor();
   assert(await page.locator('footer img[alt="BOT Chain"]').count());
+  assert.equal(await page.locator('.contracts-panel .contract').count(),(await deployedNames(product)).length,'app contract slots');
   await noOverflow('app');await page.screenshot({path:`evidence/${product.slug}-app-${width}.png`,fullPage:true});
   assert.deepEqual(errors,[]);results.push({product:product.name,width,landing:200,app:true,botchainFooter:true,overflow:false,pageErrors:errors,pending,walletMissingHandled:true});await context.close();
  }

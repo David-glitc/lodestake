@@ -72,6 +72,8 @@ export const tx=(name,fn,args=[],value=0n,addr=config.contracts[name])=>transact
 export async function approve(token,spender,n){await wallet();const allowed=await client.readContract({address:token,abi:tokenAbi,functionName:'allowance',args:[state.account,spender]});if(allowed<n){if(allowed>0n)await transact(tokenAbi,token,'approve',[spender,0n]);await transact(tokenAbi,token,'approve',[spender,n]);}}
 export async function approveNFT(token,id,spender){await wallet();if((await client.readContract({address:token,abi:tokenAbi,functionName:'getApproved',args:[id]})).toLowerCase()!==spender.toLowerCase())await transact(nftAbi,token,'approve',[spender,id]);}
 export const wrapForms=()=>details('Wrap or unwrap BOT',form('wrap',field('wrap-amount','BOT to wrap','0.01','text','inputmode="decimal"'),'Wrap BOT',async f=>transact(tokenAbi,config.infrastructure.WBOT,'deposit',[],amount(f['wrap-amount'])))+form('unwrap',field('unwrap-amount','WBOT to unwrap','0.01','text','inputmode="decimal"'),'Unwrap WBOT',async f=>transact(tokenAbi,config.infrastructure.WBOT,'withdraw',[amount(f['unwrap-amount'])])));
+/** A BOT Chain asset symbol, linked to its BOTScan token page (BOT links to BOT Chain). Unknown symbols stay plain text. */
+export const asset=(symbol,address)=>{const k=String(symbol).toUpperCase(),a=config.assetLinks?.[k];const href=a?.href||(address?`https://scan.botchain.ai/token/${address}`:null);return href?`<a class="asset" href="${esc(href)}" target="_blank" rel="noopener noreferrer" title="${esc(a?.name||symbol)} on BOT Chain">${esc(symbol)}</a>`:esc(symbol);};
 export const mine=a=>!!state.account&&a?.toLowerCase()===state.account.toLowerCase();
 
 let product;
@@ -95,6 +97,5 @@ export function start(p){
  document.addEventListener('submit',e=>{if(!e.target.dataset.form)return;e.preventDefault();const f=e.target;run(()=>actions.get(f.dataset.form)(Object.fromEntries(new FormData(f))));});
  $('connect').onclick=()=>run(connect);$('add-chain').onclick=()=>run(addChain);$('refresh').onclick=()=>run(state.verified?refresh:boot);
  product.controls();
- $('contract').innerHTML=`<p>BOT Chain mainnet · Chain ID 677</p><p>${config.contracts[config.contract]?link(config.contracts[config.contract],'View app contract on BOTScan'):'Contract deployment pending'}</p><p><a href="/deployment.json">Public deployment record</a></p>`;
  boot();
 }

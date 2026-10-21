@@ -50,3 +50,21 @@ dialog form>button{width:100%}
 .weights legend{font-size:12px;font-weight:600;padding:0 6px}
 .tiny.error{color:#e2a49c}
 .holdings{margin:6px 0 10px}
+
+.chain-badge{display:inline-flex;align-items:center;gap:8px;text-decoration:none;color:var(--muted);font-size:12px;border:1px solid var(--line);border-radius:999px;padding:7px 12px;background:#18201b}
+.chain-badge:hover{border-color:#10A37F}
+.chain-badge img{height:15px;width:auto}
+.contracts{display:grid;gap:10px;margin:18px 0}
+.contract{display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap;border:1px solid var(--line);border-radius:10px;padding:14px 18px;background:#18201b}
+.contract strong{font-family:'Space Grotesk',sans-serif}
+.contract a,.contract .pending{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;overflow-wrap:anywhere}
+.contract .pending{color:var(--muted);border:1px dashed var(--line);border-radius:6px;padding:4px 10px}
+.assets-title{margin-top:26px}
+.assets{list-style:none;padding:0;margin:10px 0 0;display:flex;flex-wrap:wrap;gap:8px}
+.assets a{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-size:13px;text-decoration:none}
+.assets a:hover{border-color:var(--accent)}
+.contracts-panel h2{font-size:18px;margin-bottom:6px}
+.contracts-panel .contract{padding:10px 12px}
+a.asset{text-decoration-thickness:1px}
+@media(max-width:760px){.chain-badge span{display:none}.chain-badge.compact{display:none}}
+@media(max-width:480px){header{gap:10px}.header-actions{gap:6px}.chain-badge{padding:6px 8px}.chain-badge img{height:12px}.header-actions a.button{padding:9px 11px;font-size:13px}.brand{font-size:19px;gap:8px}.mark{width:22px;height:22px}}

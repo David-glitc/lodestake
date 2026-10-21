@@ -4,7 +4,7 @@
 
 **Status:** contracts are tested on a BOT Chain mainnet fork; the mainnet deployment is pending.
 
-- Website and app: https://lodestake-botchain.davidopuene8.workers.dev (app at [`/app/`](https://lodestake-botchain.davidopuene8.workers.dev/app/))
+- Website and app: https://lodestake.vercel.app (app at [`/app/`](https://lodestake.vercel.app/app/))
 - Network: BOT Chain mainnet, chain ID 677 · [BOT Chain](https://www.botchain.ai/) · [BOTScan](https://scan.botchain.ai/)
 
 ![Lodestake landing page](docs/lodestake-landing-1280.png)
@@ -61,7 +61,7 @@ node scripts/deploy.mjs && node scripts/fork-check.mjs
 
 ### Deploy
 
-`scripts/deploy.mjs` reads the deployer key from `BOT_SIGNER_FILE` (default `~/.config/botchain-wave1/deployer.env`, never committed), refuses to broadcast on mainnet without `BOT_MAX_GAS_BOT`, and journals every transaction to `deployments/mainnet.json` so it can resume. `python3 scripts/publish.py` publishes the site with a one-hour, Workers-only Cloudflare token and revokes it afterwards.
+`scripts/deploy.mjs` reads the deployer key from `BOT_SIGNER_FILE` (default `~/.config/botchain-wave1/deployer.env`, never committed), refuses to broadcast on mainnet without `BOT_MAX_GAS_BOT`, and journals every transaction to `deployments/mainnet.json` so it can resume. `npm run publish` deploys the built site to Vercel as a static production deployment.
 
 ## License
 

@@ -1,6 +1,6 @@
 import {parseEther} from 'viem';
 export default {
- slug:'lodestake',name:'Lodestake',repo:'lodestake',contract:'Lodestake',color:'#ffa84c',eyebrow:'ONCHAIN GRID GAME',symbol:'✦',
+ slug:'lodestake',vercel:'lodestake',assets:['BOT','WBOT'],name:'Lodestake',repo:'lodestake',contract:'Lodestake',color:'#ffa84c',eyebrow:'ONCHAIN GRID GAME',symbol:'✦',
  line:'Nine tiles. One winning vein.',
  description:'A pooled grid game using WBOT. Play a tile, settle the round, and claim your payout.',
  abis:['Lodestake'],
