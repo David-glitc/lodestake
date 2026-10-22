@@ -2,14 +2,14 @@ import fs from 'node:fs';
 import {defineChain,createPublicClient,http} from 'viem';
 import list from './products/index.mjs';
 export const root=new URL('../',import.meta.url);
-// Networks the products deploy to. BOT_NETWORK picks one; the sites currently run on testnet with mainnet coming soon.
+// Networks the products deploy to. BOT_NETWORK picks one; mainnet is live (October 2026), testnet stays available.
 export const networks={
  mainnet:{key:'mainnet',id:677,name:'BOT Chain',label:'BOT Chain Mainnet',rpc:'https://rpc.botchain.ai',explorer:'https://scan.botchain.ai',explorerName:'BOTScan',
   infrastructure:{USDT:'0xaBabc7Ddc03e501d190C676BF3d92ef0e6e87a3C',WBOT:'0xD5452816194a3784dBa983426cCe7c122F4abd30',router:'0x07032d47A1b9f8460cBeE9dC17c1d3E438693929',quoter:'0x034A705b36067cff99ABf5C662Be881cBd8d0176',fee:3000}},
  testnet:{key:'testnet',id:968,name:'BOT Chain Testnet',label:'BOT Chain Testnet',rpc:'https://rpc.bohr.life',explorer:'https://scan.bohr.life',explorerName:'BOT Chain Testnet explorer',faucet:'https://faucet.botchain.ai/en/basic',
   infrastructure:{USDT:'0x75edC9335175Fc0552D51D48439F229c10420fe3',WBOT:'0xD5452816194a3784dBa983426cCe7c122F4abd30',router:'0x07032d47A1b9f8460cBeE9dC17c1d3E438693929',quoter:'0x034A705b36067cff99ABf5C662Be881cBd8d0176',fee:3000}},
 };
-export const network=networks[process.env.BOT_NETWORK||'testnet'];
+export const network=networks[process.env.BOT_NETWORK||'mainnet'];
 if(!network)throw Error(`Unknown BOT_NETWORK ${process.env.BOT_NETWORK}; use testnet or mainnet`);
 export const rpc=process.env.BOT_RPC_URL||network.rpc;
 export const local=/^http:\/\/(127\.0\.0\.1|localhost):/.test(rpc);

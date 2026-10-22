@@ -2,7 +2,7 @@
 
 **Nine tiles. One winning vein.** A pooled grid game using WBOT. Play a tile, settle the round, and claim your payout.
 
-**Status:** contracts are tested on a BOT Chain mainnet fork; the mainnet deployment is pending.
+**Officially launched on BOT Chain Mainnet** on 2026-10-22.
 
 - Website and app: https://lodestake.vercel.app (app at [`/app/`](https://lodestake.vercel.app/app/))
 - Network: BOT Chain mainnet, chain ID 677 · [BOT Chain](https://www.botchain.ai/) · [BOTScan](https://scan.botchain.ai/)
@@ -26,9 +26,9 @@
 
 | Contract | BOT Chain mainnet |
 |---|---|
-| `Lodestake` | Pending mainnet deployment |
+| `Lodestake` | [`0x1ecba018a0c1a1a3cfd7ec0733ef8ddd0367a695`](https://scan.botchain.ai/address/0x1ecba018a0c1a1a3cfd7ec0733ef8ddd0367a695) |
 
-BOT Chain infrastructure used: USDT `0x75edC9335175Fc0552D51D48439F229c10420fe3`, WBOT `0xD5452816194a3784dBa983426cCe7c122F4abd30`, BDEX router `0x07032d47A1b9f8460cBeE9dC17c1d3E438693929`, BDEX QuoterV2 `0x034A705b36067cff99ABf5C662Be881cBd8d0176`.
+BOT Chain infrastructure used: USDT `0xaBabc7Ddc03e501d190C676BF3d92ef0e6e87a3C`, WBOT `0xD5452816194a3784dBa983426cCe7c122F4abd30`, BDEX router `0x07032d47A1b9f8460cBeE9dC17c1d3E438693929`, BDEX QuoterV2 `0x034A705b36067cff99ABf5C662Be881cBd8d0176`.
 
 Source: [`contracts/src`](contracts/src). Tests: [`contracts/test`](contracts/test). The contracts are unaudited; use small amounts.
 
