@@ -1,9 +1,9 @@
 import fs from 'node:fs';
 import {formatEther,parseAbi} from 'viem';
-import {root,publicClient,infrastructure,artifact,products,deployedNames,stringify} from './config.mjs';
+import {root,network,publicClient,infrastructure,artifact,products,deployedNames,stringify} from './config.mjs';
 const {address}=JSON.parse(fs.readFileSync(new URL('deployments/deployer.json',root)));
-if(await publicClient.getChainId()!==677)throw Error('Wrong chain; expected BOT mainnet 677');
-const result={chainId:677,deployer:address,balanceBOT:formatEther(await publicClient.getBalance({address})),gasPriceWei:(await publicClient.getGasPrice()).toString(),infrastructure:{},bytecode:{}};
+if(await publicClient.getChainId()!==network.id)throw Error(`Wrong chain; expected ${network.label} (${network.id})`);
+const result={chainId:network.id,network:network.key,deployer:address,balanceBOT:formatEther(await publicClient.getBalance({address})),gasPriceWei:(await publicClient.getGasPrice()).toString(),infrastructure:{},bytecode:{}};
 for(const [name,address] of Object.entries(infrastructure).filter(([,v])=>typeof v==='string')){
  const code=await publicClient.getCode({address});if(!code||code==='0x')throw Error(`${name} missing bytecode`);
  result.infrastructure[name]={address,bytes:(code.length-2)/2};
@@ -15,4 +15,4 @@ for(const p of products)for(const name of await deployedNames(p)){
  if(size>24576)throw Error(`${name}: runtime ${size} exceeds EIP-170`);
  result.bytecode[name]=size;
 }
-fs.writeFileSync(new URL('deployments/preflight.json',root),stringify(result));console.log(stringify(result));
+fs.writeFileSync(new URL(`deployments/preflight-${network.key}.json`,root),stringify(result));console.log(stringify(result));

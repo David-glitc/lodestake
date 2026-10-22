@@ -1,17 +1,18 @@
 import fs from 'node:fs';
 import {createWalletClient,http,parseEther,formatEther,keccak256,encodeDeployData,encodeFunctionData} from 'viem';
 import {privateKeyToAccount} from 'viem/accounts';
-import {root,rpc,local,chain,publicClient as c,infrastructure as i,products,artifact,journalURL,readJournal,stringify} from './config.mjs';
-if(await c.getChainId()!==677)throw Error('Wrong chain');
+import {root,rpc,local,chain,network,publicClient as c,infrastructure as i,products,artifact,journalURL,readJournal,stringify} from './config.mjs';
+if(await c.getChainId()!==network.id)throw Error(`Wrong chain; expected ${network.label} (${network.id})`);
 const keyFile=process.env.BOT_SIGNER_FILE||`${process.env.HOME}/.config/botchain-wave1/deployer.env`;
 const key=fs.readFileSync(keyFile,'utf8').match(/^DEPLOYER_PRIVATE_KEY=(.*)$/m)?.[1];
 const account=privateKeyToAccount(key);const wallet=createWalletClient({account,chain,transport:http(rpc)});
 const expected=JSON.parse(fs.readFileSync(new URL('deployments/deployer.json',root))).address;
 if(account.address.toLowerCase()!==expected.toLowerCase())throw Error('Wrong deployer');
-if(!local&&!process.env.BOT_MAX_GAS_BOT)throw Error('Set BOT_MAX_GAS_BOT to the user-authorized TOTAL gas budget before broadcasting');
-const budget=parseEther(local?'100':process.env.BOT_MAX_GAS_BOT);
-const state=readJournal()||{chainId:677,deployer:account.address,local,contracts:{},actions:{},gasSpentWei:'0',ready:false,infrastructure:i};
-if(state.chainId!==677||state.deployer!==account.address||state.local!==local)throw Error('Journal mismatch');
+// Mainnet spends real BOT, so it needs an explicit, user-authorized budget. Testnet BOT is free from the faucet.
+if(!local&&network.key==='mainnet'&&!process.env.BOT_MAX_GAS_BOT)throw Error('Set BOT_MAX_GAS_BOT to the user-authorized TOTAL gas budget before broadcasting');
+const budget=parseEther(local?'100':process.env.BOT_MAX_GAS_BOT||'5');
+const state=readJournal()||{chainId:network.id,network:network.key,deployer:account.address,local,contracts:{},actions:{},gasSpentWei:'0',ready:false,infrastructure:i};
+if(state.chainId!==network.id||state.deployer!==account.address||state.local!==local)throw Error('Journal mismatch');
 const save=()=>fs.writeFileSync(journalURL,stringify(state));
 async function send(id,params){
  let action=state.actions[id];

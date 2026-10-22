@@ -1,7 +1,7 @@
 {
   "localOnly": true,
   "chainId": 677,
-  "checkedAt": "2026-10-18T22:51:29.635Z",
+  "checkedAt": "2026-10-22T09:03:21.499Z",
   "lodestake": {
     "round": "2",
     "flow": "wrap → approve → stake → settle → refund claim"

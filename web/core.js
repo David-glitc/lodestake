@@ -2,14 +2,15 @@ import {createPublicClient,createWalletClient,custom,http,defineChain,parseAbi,p
 // Wallets may return lowercase or non-checksummed addresses; normalize before use.
 const norm=a=>a?getAddress(a.toLowerCase()):null;
 export const config=APP,abis=ABIS;
-export const chain=defineChain({id:677,name:'BOT Chain',nativeCurrency:{name:'BOT',symbol:'BOT',decimals:18},rpcUrls:{default:{http:[config.rpc]}},blockExplorers:{default:{name:'BOTScan',url:'https://scan.botchain.ai'}}});
+export const net=config.net;
+export const chain=defineChain({id:net.id,name:net.name,nativeCurrency:{name:'BOT',symbol:'BOT',decimals:18},rpcUrls:{default:{http:[config.rpc]}},blockExplorers:{default:{name:net.explorerName,url:net.explorer}}});
 export const client=createPublicClient({chain,transport:http(config.rpc,{timeout:20000,retryCount:1})});
 export const tokenAbi=parseAbi(['function approve(address,uint256) returns(bool)','function allowance(address,address) view returns(uint256)','function balanceOf(address) view returns(uint256)','function deposit() payable','function withdraw(uint256)','function ownerOf(uint256) view returns(address)','function getApproved(uint256) view returns(address)']);
 const nftAbi=parseAbi(['function approve(address,uint256)']);
 export const $=id=>document.getElementById(id),esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 export const short=a=>a?`${a.slice(0,6)}…${a.slice(-4)}`:'—';
 export const fmt=(n,decimals=18)=>formatUnits(n,decimals);
-export const link=(address,label=short(address))=>`<a href="https://scan.botchain.ai/address/${esc(address)}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>`;
+export const link=(address,label=short(address))=>`<a href="${net.explorer}/address/${esc(address)}" target="_blank" rel="noopener noreferrer">${esc(label)}</a>`;
 export const state={account:null,verified:false};
 let busy=false,provider=null;const actions=new Map();let nextAction=0;
 export function status(message,error=false){$('status').textContent=message;$('status').classList.toggle('error',error);}
@@ -30,7 +31,8 @@ export const chainTime=async()=>Number((await client.getBlock()).timestamp);
 const wallets=new Map();
 window.addEventListener('eip6963:announceProvider',e=>{if(e.detail?.provider&&e.detail?.info?.uuid)wallets.set(e.detail.info.uuid,e.detail);});
 window.dispatchEvent(new Event('eip6963:requestProvider'));
-const chainParams={chainId:'0x2a5',chainName:'BOT Chain',nativeCurrency:{name:'BOT',symbol:'BOT',decimals:18},rpcUrls:['https://rpc.botchain.ai'],blockExplorerUrls:['https://scan.botchain.ai']};
+const chainHex='0x'+net.id.toString(16);
+const chainParams={chainId:chainHex,chainName:net.name,nativeCurrency:{name:'BOT',symbol:'BOT',decimals:18},rpcUrls:[net.rpc],blockExplorerUrls:[net.explorer]};
 function choose(){
  const list=[...wallets.values()];if(!list.length&&window.ethereum)list.push({info:{uuid:'injected',name:'Browser wallet'},provider:window.ethereum});
  if(!list.length)throw Error('No wallet found. Install BO Wallet, MetaMask or another EVM wallet, then reload this page.');
@@ -46,15 +48,15 @@ function choose(){
 export async function connect(){
  if(!provider){const picked=await choose();provider=picked.provider;
   provider.on?.('accountsChanged',accounts=>{state.account=norm(accounts[0]);$('connect').textContent=state.account?short(state.account):'Connect wallet';run(refresh);});
-  provider.on?.('chainChanged',()=>status('Wallet network changed. Transactions require BOT Chain 677.'));}
+  provider.on?.('chainChanged',()=>status(`Wallet network changed. Transactions require ${net.label} (${net.id}).`));}
  state.account=norm((await provider.request({method:'eth_requestAccounts'}))[0]);$('connect').textContent=short(state.account);return state.account;
 }
-export async function addChain(){if(!provider)await connect();try{await provider.request({method:'wallet_switchEthereumChain',params:[{chainId:'0x2a5'}]});}catch(e){if(e.code!==4902&&e?.data?.originalError?.code!==4902)throw e;await provider.request({method:'wallet_addEthereumChain',params:[chainParams]});}status('Your wallet is on BOT Chain mainnet (677).');}
+export async function addChain(){if(!provider)await connect();try{await provider.request({method:'wallet_switchEthereumChain',params:[{chainId:chainHex}]});}catch(e){if(e.code!==4902&&e?.data?.originalError?.code!==4902)throw e;await provider.request({method:'wallet_addEthereumChain',params:[chainParams]});}status(`Your wallet is on ${net.label} (${net.id}).`);}
 async function wallet(){
- if(!state.verified)throw Error('Mainnet contracts are not available yet. No transaction was sent.');
+ if(!state.verified)throw Error(`${net.label} contracts are not available yet. No transaction was sent.`);
  if(!state.account)await connect();
- if(Number(await provider.request({method:'eth_chainId'}))!==677)await addChain();
- if(Number(await provider.request({method:'eth_chainId'}))!==677)throw Error('Switch your wallet to BOT Chain mainnet (677).');
+ if(Number(await provider.request({method:'eth_chainId'}))!==net.id)await addChain();
+ if(Number(await provider.request({method:'eth_chainId'}))!==net.id)throw Error(`Switch your wallet to ${net.label} (${net.id}).`);
  state.account=norm((await provider.request({method:'eth_accounts'}))[0]);if(!state.account)throw Error('Wallet disconnected.');
  return createWalletClient({account:state.account,chain,transport:custom(provider)});
 }
@@ -73,22 +75,22 @@ export async function approve(token,spender,n){await wallet();const allowed=awai
 export async function approveNFT(token,id,spender){await wallet();if((await client.readContract({address:token,abi:tokenAbi,functionName:'getApproved',args:[id]})).toLowerCase()!==spender.toLowerCase())await transact(nftAbi,token,'approve',[spender,id]);}
 export const wrapForms=()=>details('Wrap or unwrap BOT',form('wrap',field('wrap-amount','BOT to wrap','0.01','text','inputmode="decimal"'),'Wrap BOT',async f=>transact(tokenAbi,config.infrastructure.WBOT,'deposit',[],amount(f['wrap-amount'])))+form('unwrap',field('unwrap-amount','WBOT to unwrap','0.01','text','inputmode="decimal"'),'Unwrap WBOT',async f=>transact(tokenAbi,config.infrastructure.WBOT,'withdraw',[amount(f['unwrap-amount'])])));
 /** A BOT Chain asset symbol, linked to its BOTScan token page (BOT links to BOT Chain). Unknown symbols stay plain text. */
-export const asset=(symbol,address)=>{const k=String(symbol).toUpperCase(),a=config.assetLinks?.[k];const href=a?.href||(address?`https://scan.botchain.ai/token/${address}`:null);return href?`<a class="asset" href="${esc(href)}" target="_blank" rel="noopener noreferrer" title="${esc(a?.name||symbol)} on BOT Chain">${esc(symbol)}</a>`:esc(symbol);};
+export const asset=(symbol,address)=>{const k=String(symbol).toUpperCase(),a=config.assetLinks?.[k];const href=a?.href||(address?`${net.explorer}/token/${address}`:null);return href?`<a class="asset" href="${esc(href)}" target="_blank" rel="noopener noreferrer" title="${esc(a?.name||symbol)} on BOT Chain">${esc(symbol)}</a>`:esc(symbol);};
 export const mine=a=>!!state.account&&a?.toLowerCase()===state.account.toLowerCase();
 
 let product;
 async function run(fn){if(busy)return;busy=true;$('workspace').setAttribute('aria-busy','true');try{await fn();await refresh();}catch(e){status(e.shortMessage||e.message||'The request failed. Please retry.',true);}finally{busy=false;$('workspace').removeAttribute('aria-busy');}}
 let renderSeq=0;
 async function refresh(){
- if(!state.verified){$('records').innerHTML='<p class="empty">This BOT Chain app is awaiting its mainnet contract deployment. Transactions unlock once the deployment is verified.</p>';return;}
+ if(!state.verified){$('records').innerHTML=`<p class="empty">This app is awaiting its ${net.label} contract deployment. Transactions unlock once the deployment is verified.</p>`;return;}
  // A slower, older render (for example from before the wallet connected) must never overwrite a newer one.
  const seq=++renderSeq;$('records').setAttribute('aria-busy','true');
  try{const html=await product.render();if(seq===renderSeq)$('records').innerHTML=html;}finally{if(seq===renderSeq)$('records').removeAttribute('aria-busy');}
 }
 async function boot(){
- if(!config.ready){status('Deployment pending — mainnet transactions are not enabled yet.');await refresh();return;}
- try{if(await client.getChainId()!==677)throw Error('RPC returned an unexpected network.');const code=await client.getCode({address:config.contracts[config.contract]});if(!code||code==='0x')throw Error('The app contract is unavailable.');
-  state.verified=true;await product.onVerified?.();status('Connected to BOT Chain mainnet. Connect your wallet to get started.');await refresh();}
+ if(!config.ready){status(`Deployment pending — ${net.label} transactions are not enabled yet.`);await refresh();return;}
+ try{if(await client.getChainId()!==net.id)throw Error('RPC returned an unexpected network.');const code=await client.getCode({address:config.contracts[config.contract]});if(!code||code==='0x')throw Error('The app contract is unavailable.');
+  state.verified=true;await product.onVerified?.();status(`Connected to ${net.label}.${net.key==='testnet'?' Test BOT is free from the faucet.':''} Connect your wallet to get started.`);await refresh();}
  catch(e){status(e.shortMessage||e.message,true);$('records').innerHTML='<p class="empty">Could not load onchain data. Use Refresh to retry.</p>';}
 }
 export function start(p){
