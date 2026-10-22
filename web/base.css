@@ -2,6 +2,7 @@
    theme's tokens (web/themes/<slug>/theme.css). Do not add raw colors here; add a token instead. See DESIGN.md. */
 *{box-sizing:border-box}
 :root{font-family:var(--font-body);color:var(--ink);background:var(--bg);font-synthesis:none;color-scheme:var(--scheme);-webkit-text-size-adjust:100%}
+html,body{overflow-x:clip}
 body{margin:0;background:var(--bg);line-height:1.5}
 button,input,select,textarea{font:inherit;color:inherit}
 button,a,input,textarea,select,summary{-webkit-tap-highlight-color:transparent}
@@ -9,7 +10,7 @@ button,a,input,textarea,select,summary{-webkit-tap-highlight-color:transparent}
 a{color:var(--link);text-underline-offset:4px;text-decoration-thickness:1px}
 a:hover{text-decoration-thickness:2px}
 h1,h2,h3{font-family:var(--font-display);font-weight:var(--display-weight);letter-spacing:var(--display-tracking);text-transform:var(--display-case);color:var(--ink);line-height:1.12}
-h1{font-size:clamp(2.4rem,5.4vw,4.4rem);margin:16px 0 22px;max-width:16ch;line-height:1.02}
+h1{font-size:clamp(2.8rem,7vw,6rem);margin:18px 0 24px;max-width:13ch;line-height:.98}
 h2{font-size:clamp(1.6rem,3vw,2.3rem);margin:0 0 20px}
 h3{font-size:1.1rem;margin:0 0 10px}
 p{color:var(--ink-2);margin:0 0 16px}
@@ -26,7 +27,7 @@ button.primary:hover:not(:disabled),a.button.primary:hover{background:var(--acce
 button:disabled{cursor:not-allowed;opacity:.55;box-shadow:none}
 
 /* Header */
-header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 0;border-bottom:var(--border-w) solid var(--line)}
+header{position:relative;z-index:3;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:20px 0;border-bottom:var(--border-w) solid var(--line)}
 .brand{display:flex;align-items:center;gap:10px;color:var(--ink);text-decoration:none;font-family:var(--font-display);font-weight:var(--display-weight);letter-spacing:var(--display-tracking);text-transform:var(--display-case);font-size:1.45rem}
 .brand .logo{width:34px;height:34px;flex:none;display:block}
 .site-nav{display:flex;gap:24px;font-size:.95rem}
@@ -40,12 +41,26 @@ header{display:flex;align-items:center;justify-content:space-between;gap:20px;pa
 /* Eyebrow and labels */
 .eyebrow{display:inline-block;font-family:var(--font-label);font-size:.75rem;font-weight:700;letter-spacing:var(--label-tracking);text-transform:uppercase;color:var(--accent-text)}
 
-/* Landing hero */
-.hero{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);grid-template-areas:"copy art";gap:48px;align-items:center;padding:72px 0 56px}
+/* Landing hero: full-bleed glow mesh and texture behind the header and hero, per-theme tokens. */
+.hero{position:relative;isolation:isolate;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-areas:"copy art";gap:48px;align-items:center;min-height:min(84vh,820px);padding:64px 0 72px}
+.hero:before,.hero:after{content:'';position:absolute;left:50%;width:100vw;transform:translateX(-50%);top:-96px;bottom:0;z-index:-2;pointer-events:none}
+.hero:before{background:var(--hero-bg)}
+.hero:after{z-index:-1;background:var(--hero-pattern);background-size:var(--hero-pattern-size);-webkit-mask-image:radial-gradient(ellipse 70% 65% at 60% 45%,#000 20%,transparent 75%);mask-image:radial-gradient(ellipse 70% 65% at 60% 45%,#000 20%,transparent 75%);opacity:var(--hero-pattern-opacity)}
 .hero>div:first-child{grid-area:copy}
-.hero p{font-size:1.1rem;max-width:52ch}
-.hero-art{grid-area:art;display:flex;justify-content:center;align-items:center}
-.hero-art svg{width:100%;max-width:460px;height:auto;display:block}
+.hero p{font-size:1.15rem;max-width:50ch}
+.hero-chip{display:inline-flex;align-items:center;gap:10px;margin-bottom:6px;padding:7px 14px;border:1px solid var(--line-strong);border-radius:var(--radius-pill);background:var(--chip-bg);font-family:var(--font-label);font-size:.8rem;font-weight:600;color:var(--ink)}
+.hero-chip:before{content:'';width:8px;height:8px;border-radius:50%;background:var(--live);box-shadow:0 0 0 4px var(--live-ring);animation:pulse 2.4s ease-in-out infinite}
+.hero-chip.pending:before{background:var(--ink-2);box-shadow:none;animation:none}
+.hero-art{grid-area:art;position:relative;display:flex;justify-content:center;align-items:center}
+.hero-art:before{content:'';position:absolute;inset:8% 6%;z-index:-1;border-radius:50%;background:var(--art-glow);filter:blur(48px);opacity:.75}
+.hero-art svg{width:100%;max-width:500px;height:auto;display:block;animation:float 7s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px var(--live-ring)}50%{box-shadow:0 0 0 8px transparent}}
+.ticker{position:relative;left:50%;width:100vw;transform:translateX(-50%);overflow:hidden;border-top:var(--border-w) solid var(--line);border-bottom:var(--border-w) solid var(--line);background:var(--ticker-bg)}
+.ticker-track{display:flex;width:max-content;gap:48px;padding:14px 0;animation:marquee 46s linear infinite}
+.ticker span{display:inline-flex;align-items:center;gap:48px;font-family:var(--font-label);font-size:.8rem;font-weight:700;letter-spacing:var(--label-tracking);text-transform:uppercase;color:var(--ink-2);white-space:nowrap}
+.ticker span:after{content:'';width:6px;height:6px;border-radius:50%;background:var(--accent)}
+@keyframes marquee{to{transform:translateX(-50%)}}
 .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
 .launch{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px 24px;padding:18px 22px;margin-bottom:8px;border:var(--border-w) solid var(--accent);border-radius:var(--radius-lg);background:var(--surface);box-shadow:var(--shadow-1)}
 .launch.pending{border-color:var(--line-strong)}
@@ -82,7 +97,8 @@ header{display:flex;align-items:center;justify-content:space-between;gap:20px;pa
 .assets a:hover{border-color:var(--accent)}
 
 /* App page */
-.app-intro{padding:44px 0 24px}
+.app-intro{position:relative;isolation:isolate;padding:52px 0 32px}
+.app-intro:before{content:'';position:absolute;left:50%;width:100vw;transform:translateX(-50%);top:-96px;bottom:-24px;z-index:-1;pointer-events:none;background:var(--hero-bg);opacity:.75;-webkit-mask-image:linear-gradient(#000 55%,transparent);mask-image:linear-gradient(#000 55%,transparent)}
 .app-intro h1{font-size:clamp(2rem,4vw,3rem);margin:12px 0}
 .app-intro p{margin:0}
 .status{margin-bottom:24px;padding:16px 20px;border:var(--border-w) solid var(--line);border-left-width:var(--border-w);border-radius:var(--radius-md);background:var(--surface);color:var(--ink);font-size:.92rem;overflow-wrap:anywhere}
@@ -146,7 +162,7 @@ dialog form>button{width:100%}
 .legal{grid-column:1/-1;margin:0;font-size:.78rem}
 .hidden{display:none!important}
 
-@media(max-width:860px){.site-nav{display:none}.steps,.features,.facts{grid-template-columns:1fr}.site-footer{grid-template-columns:1fr}.hero{grid-template-columns:1fr;grid-template-areas:"copy" "art";gap:32px;padding:44px 0 32px}.hero-art svg{max-width:340px}.layout{grid-template-columns:1fr}}
+@media(max-width:860px){.site-nav{display:none}.steps,.features,.facts{grid-template-columns:1fr}.site-footer{grid-template-columns:1fr}.hero{grid-template-columns:1fr;grid-template-areas:"copy" "art";gap:32px;min-height:0;padding:44px 0 48px}.hero-art svg{max-width:360px}.layout{grid-template-columns:1fr}}
 @media(max-width:760px){.shell{padding:0 18px}.band{padding:44px 0}.panel{padding:20px}.cta-band{padding:36px 22px}#add-chain{display:none}.chain-badge.compact{display:none}}
-@media(max-width:480px){header{gap:10px}.header-actions{gap:6px}.chain-badge span{display:none}.chain-badge{padding:6px 8px}.chain-badge img{height:12px}.header-actions a.button{min-height:40px;padding:8px 12px;font-size:.85rem}.brand{font-size:1.15rem}.brand .logo{width:28px;height:28px}h1{font-size:2.3rem}}
+@media(max-width:480px){header{gap:10px}.header-actions{gap:6px}.chain-badge span{display:none}.chain-badge{padding:6px 8px}.chain-badge img{height:12px}.header-actions a.button{min-height:40px;padding:8px 12px;font-size:.85rem}.brand{font-size:1.15rem}.brand .logo{width:28px;height:28px}h1{font-size:2.6rem}}
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}

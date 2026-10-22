@@ -28,20 +28,28 @@ Six products share one HTML structure and one app runtime, but each has its own 
 
 ## The six identities
 
-| Product | Scene | Register | Palette | Type | Shape and signature |
-|---|---|---|---|---|---|
-| **Hedgerow** | A holder reads a basket like a fund factsheet before committing | Light, editorial | Paper `#F3EEE3`, forest `#2E5B39`, ochre focus | Fraunces / Public Sans / IBM Plex Mono | 2–6px radii, double rule under header, ruled factsheet steps, serif numerals |
-| **Switchyard** | A trader swaps at night between other tabs | Dark, signage | Steel `#111315`, signal amber `#F2A93B`, cyan focus | Barlow Condensed (caps) / Barlow / JetBrains Mono | Square, hazard strip, departure-board steps, mono figures |
-| **Lodestake** | A player grabs a round on a lunch break | Dark, game | Amethyst rock `#16121D`, gold ore `#F4BE48`, mint focus | Bungee / Rubik / Space Mono | 8–18px radii, 2px borders, beveled tiles and buttons |
-| **Showproof** | Someone in a group chat snaps proof in daylight | Light, playful | Warm white `#FBF8F3`, coral `#C0371E`, cobalt links | Bricolage Grotesque / Figtree / DM Mono | Pill buttons with sticker shadow, taped polaroid steps, art-left hero |
-| **Stepsale** | A founder sets up a careful community sale | Light, fintech | Cool white `#F5F6FA`, deep blue `#2438C8`, green focus | Sora / Manrope / IBM Plex Mono | 8–16px radii, soft elevation, rising timeline steps |
-| **Tradelock** | Two collectors negotiate OTC and want to see the lock | Light, neo-brutalist | Cream `#F1EEE2`, ink `#111111`, acid lime `#C5F23A` | Unbounded / Work Sans / JetBrains Mono | Zero radius, 2px ink borders, offset shadows, lime heading markers |
+All six are dark (web3 register, per the owner's direction). Each keeps its own hue family, type and shape so they stay distinct.
+
+| Product | Scene | Palette | Type | Shape and signature |
+|---|---|---|---|---|
+| **Hedgerow** | A DAO treasury after dark; holders read baskets like a factsheet | Forest night `#09110D`, emerald `#7FD69A`, champagne `#E8C66B` | Fraunces / Public Sans / IBM Plex Mono | 2–8px radii, ruled factsheet steps, italic champagne numerals, dot texture |
+| **Switchyard** | A trader swaps at night between other tabs | Steel `#0C0E10`, signal amber `#F2A93B`, cyan lamp `#5FD3E6` | Barlow Condensed (caps) / Barlow / JetBrains Mono | Square, hazard strip, amber ticker band, rail-grid texture, departure-board steps |
+| **Lodestake** | A player grabs a round on a lunch break | Amethyst rock `#120E19`, gold ore `#F4BE48`, mint `#7DE0C3` | Bungee / Rubik / Space Mono | 8–18px radii, 2px borders, beveled glowing tiles, two-scale dot texture |
+| **Showproof** | A night-out photo wall; proof snapped in a group chat | Ink `#110D14`, coral `#FF6A4D`, cobalt `#93A9FF` | Bricolage Grotesque / Figtree / DM Mono | Pill buttons with coral sticker shadow, paper polaroid steps, art-left hero |
+| **Stepsale** | A launch at midnight; a founder sets careful terms | Navy `#070B1C`, electric blue `#5B7CFF`, mint `#3DDC97` | Sora / Manrope / IBM Plex Mono | 8–18px radii, rising timeline steps, fine grid texture |
+| **Tradelock** | An after-hours deal desk; collectors want to see the lock | Carbon `#0C0C0A`, bone `#F4F2E8`, acid lime `#C5F23A` | Unbounded / Work Sans / JetBrains Mono | Zero radius, 2px bone borders, lime offset shadows, lime heading markers and ticker |
+
+## Hero tokens
+
+`--hero-bg` (glow mesh), `--hero-pattern`, `--hero-pattern-size`, `--hero-pattern-opacity` (texture, masked to the hero centre), `--chip-bg`, `--live`, `--live-ring` (status chip), `--art-glow` (blur behind the hero art), `--ticker-bg` (scrolling band). The same mesh sits softly behind the app page header.
+
+**Recorded override:** the UI guidelines list glow meshes as a generic default. They are used here deliberately at the owner's request for a web3 aesthetic, kept to the hero and app header, with all text on solid dark surfaces so contrast is verifiable.
 
 ## Rules
 
 - Text pairs pass WCAG AA (4.5:1); borders, focus and state indicators pass 3:1. Check new colors with the contrast checker before shipping.
-- Tradelock's lime is 1.1:1 on its page, so every edge that must read is ink, never lime.
+- Tradelock edges that must read are bone (`--ink`); lime marks state and emphasis.
 - Theme layout overrides that change the hero grid must be wrapped in `@media(min-width:861px)` so the shared phone layout still applies.
-- No emoji as icons, no gradient text, no glow effects. Personality comes from type, shape and layout.
-- Light themes use `web/botchain-dark.svg`; dark themes use `web/botchain.svg`.
-- `prefers-reduced-motion` disables transitions and the Showproof card tilt.
+- No emoji as icons and no gradient text. Glow is limited to the hero, app header, hero art and primary game buttons; body sections stay solid.
+- Light themes use `web/botchain-dark.svg`; dark themes use `web/botchain.svg` (all six are currently dark).
+- `prefers-reduced-motion` disables transitions, the ticker, the floating hero art, the status pulse and the Showproof card tilt.
