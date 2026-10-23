@@ -18,7 +18,8 @@ try{
   const footer=page.locator('footer');
   assert(await footer.locator('img[alt="BOT Chain"]').evaluate(img=>img.complete&&img.naturalWidth>0),'BOT Chain logo did not load');
   assert(await footer.locator('a[href="https://www.botchain.ai/"]').count()>=2,'BOT Chain website link missing');
-  assert.equal(await footer.locator('a[href="https://scan.botchain.ai/"]').count(),1,'Explorer link missing');
+  assert(await footer.locator('.proof a[href="https://scan.botchain.ai/"]').count()===1,'Explorer link missing');
+  assert.equal(await footer.locator('.proof dd').first().textContent(),String(network.id),'proof chain ID');
   assert.equal(await footer.locator(`a[href^="https://github.com/"]`).count(),1,'GitHub link missing');
   // BOT Chain branding: header badge, contracts section, every asset link pointing at BOT Chain or BOTScan.
   assert(await page.locator('header a.chain-badge[href="https://www.botchain.ai/"] img[alt="BOT Chain"]').count(),'header BOT Chain badge missing');

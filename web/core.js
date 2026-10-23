@@ -81,17 +81,19 @@ export const mine=a=>!!state.account&&a?.toLowerCase()===state.account.toLowerCa
 let product;
 async function run(fn){if(busy)return;busy=true;$('workspace').setAttribute('aria-busy','true');try{await fn();await refresh();}catch(e){status(e.shortMessage||e.message||'The request failed. Please retry.',true);}finally{busy=false;$('workspace').removeAttribute('aria-busy');}}
 let renderSeq=0;
+/** Headline figures in the app bar: [[label, html], …]. Values are trusted HTML built by the product script. */
+function stats(list){const el=$('stats');el.hidden=!list;if(list)el.innerHTML=list.map(([k,v])=>`<div><dt>${esc(k)}</dt><dd>${v}</dd></div>`).join('');}
 async function refresh(){
- if(!state.verified){$('records').innerHTML=`<p class="empty">This app is awaiting its ${net.label} contract deployment. Transactions unlock once the deployment is verified.</p>`;return;}
+ if(!state.verified){stats(product.stats?.(true));$('records').innerHTML=`<p class="empty">This app is awaiting its ${net.label} contract deployment. Transactions unlock once the deployment is verified.</p>`;return;}
  // A slower, older render (for example from before the wallet connected) must never overwrite a newer one.
  const seq=++renderSeq;$('records').setAttribute('aria-busy','true');
- try{const html=await product.render();if(seq===renderSeq)$('records').innerHTML=html;}finally{if(seq===renderSeq)$('records').removeAttribute('aria-busy');}
+ try{const html=await product.render();if(seq===renderSeq){$('records').innerHTML=html;stats(product.stats?.());product.after?.();}}finally{if(seq===renderSeq)$('records').removeAttribute('aria-busy');}
 }
 async function boot(){
  if(!config.ready){status(`Deployment pending — ${net.label} transactions are not enabled yet.`);await refresh();return;}
  try{if(await client.getChainId()!==net.id)throw Error('RPC returned an unexpected network.');const code=await client.getCode({address:config.contracts[config.contract]});if(!code||code==='0x')throw Error('The app contract is unavailable.');
   state.verified=true;await product.onVerified?.();status(`Connected to ${net.label}.${net.key==='testnet'?' Test BOT is free from the faucet.':''} Connect your wallet to get started.`);await refresh();}
- catch(e){status(e.shortMessage||e.message,true);$('records').innerHTML='<p class="empty">Could not load onchain data. Use Refresh to retry.</p>';}
+ catch(e){status(e.shortMessage||e.message,true);stats(product.stats?.(true));$('records').innerHTML='<p class="empty">Could not load onchain data. Use Refresh to retry.</p>';}
 }
 export function start(p){
  product=p;

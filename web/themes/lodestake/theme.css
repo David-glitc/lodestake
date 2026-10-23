@@ -17,8 +17,12 @@ h2{line-height:1.15}
 .steps li{background:var(--surface-2);box-shadow:inset 0 -6px 0 rgba(0,0,0,.3)}
 .steps li:before{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:12px;background:var(--accent);color:var(--accent-ink);font-family:var(--font-display);font-weight:400;box-shadow:inset 0 -4px 0 rgba(0,0,0,.25),0 0 24px rgba(244,190,72,.35)}
 .features div{border-left:0;background:var(--surface);border:2px solid var(--line);border-radius:var(--radius-md);padding:18px}
-.grid button{box-shadow:inset 0 -6px 0 rgba(0,0,0,.3);font-family:var(--font-display)}
-.grid button[aria-pressed=true]{box-shadow:inset 0 -6px 0 rgba(0,0,0,.22),0 0 0 3px var(--focus),0 0 30px rgba(244,190,72,.45)}
+.grid button,.mine button{box-shadow:inset 0 -6px 0 rgba(0,0,0,.3)}
+.grid button{font-family:var(--font-display)}
+.mine button:hover:not(:disabled){box-shadow:inset 0 -6px 0 rgba(0,0,0,.3),0 0 18px rgba(244,190,72,.25)}
+.grid button[aria-pressed=true],.mine button[aria-pressed=true]{box-shadow:inset 0 -6px 0 rgba(0,0,0,.22),0 0 0 3px var(--focus),0 0 30px rgba(244,190,72,.45)}
 button.primary,a.button.primary{box-shadow:inset 0 -4px 0 rgba(0,0,0,.25),0 0 28px rgba(244,190,72,.35)}
 .launch{background:var(--surface-2)}
 .cta-band{background:radial-gradient(60% 120% at 85% 0%,rgba(244,190,72,.25),transparent 60%),var(--surface);border-color:var(--accent)}
+.hud>div{box-shadow:inset 0 -4px 0 rgba(0,0,0,.25)}
+.hud strong{font-family:var(--font-display);font-weight:400}

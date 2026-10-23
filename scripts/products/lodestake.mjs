@@ -2,6 +2,7 @@ import {parseEther} from 'viem';
 export default {
  slug:'lodestake',vercel:'lodestake',assets:['BOT','WBOT'],name:'Lodestake',repo:'lodestake',contract:'Lodestake',color:'#ffa84c',eyebrow:'ONCHAIN GRID GAME',symbol:'✦',
  line:'Nine tiles. One winning vein.',
+ app:{title:'The mine',line:'Pick a tile before the round closes. The vein decides who splits the pool.',layout:'board'},
  description:'A pooled grid game using WBOT. Play a tile, settle the round, and claim your payout.',
  abis:['Lodestake'],
  contracts:['src/Lodestake.sol','src/interfaces/IERC20.sol'],tests:['test/Lodestake.t.sol'],
