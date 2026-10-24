@@ -6,6 +6,7 @@
 
 - Website and app: https://lodestake.vercel.app (app at [`/app/`](https://lodestake.vercel.app/app/))
 - Network: BOT Chain mainnet, chain ID 677 · [BOT Chain](https://www.botchain.ai/) · [BOTScan](https://scan.botchain.ai/)
+- X: [@Lodestake_gg](https://x.com/Lodestake_gg)
 
 ![Lodestake landing page](docs/lodestake-landing-1280.png)
 

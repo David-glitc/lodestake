@@ -18,7 +18,7 @@
       }
     }
   },
-  "gasSpentWei": "284775900000000000",
+  "gasSpentWei": "397355720000000000",
   "ready": true,
   "infrastructure": {
     "USDT": "0xaBabc7Ddc03e501d190C676BF3d92ef0e6e87a3C",
@@ -35,8 +35,81 @@
   },
   "records": {
     "hedgerowReferenceBasket": {
-      "vault": "0x94B8d2f320b4E96Fb3FA5c040E8F272B18fC31A9",
-      "tx": "0x2c24e6e1a4f01297f0ea0106be58b14c75698f0625fd45597887c83316707e21"
+      "vault": "0x03761346f5c0C479bd3256A4A72848Bbc4BE5729",
+      "tx": "0xb6eeda7d51421ddd17b43420480ee451a9ba70e544a9a9efd270f6af08f2392f",
+      "name": "BOT Chain Core",
+      "goalBOT": "10",
+      "raiseEnd": "2026-11-07T08:54:20.000Z",
+      "gasBOT": "0.01074572"
+    },
+    "communityTestBasket": {
+      "vault": "0xC63d4B4B17fbb1F74B50E4966A7Db17745321b38",
+      "tx": "0xc55f08e6e1ce5172d6a9d8a82718171da9f6e3f3749b8211123f3e5a9c878238",
+      "name": "Community Test Basket",
+      "goalBOT": "0.5",
+      "raiseEnd": "2026-10-31T08:54:22.000Z",
+      "gasBOT": "0.00801236"
+    },
+    "botStableBasket": {
+      "vault": "0xD46C309bA6Dd93334386ba82e9A843Bfc28797c8",
+      "tx": "0x1c9063ae5021cede4ad26495d6cea8bcddce5d30c2902456bd0dd28ace6f7b29",
+      "name": "BOT Stable",
+      "goalBOT": "5",
+      "raiseEnd": "2026-11-07T10:09:57.000Z",
+      "gasBOT": "0.0080114"
+    },
+    "ecosystemIndexBasket": {
+      "vault": "0x66EeE3b6fEb7aFec45dc3af9A06DB34391E3065a",
+      "tx": "0x77fd38b31a9bcaedb47e3d6eafb152962ddfabc62971949c7408c73236685171",
+      "name": "BOT Chain Ecosystem Index",
+      "goalBOT": "10",
+      "raiseEnd": "2026-11-14T10:10:01.000Z",
+      "gasBOT": "0.01040636"
+    },
+    "caConvictionBasket": {
+      "vault": "0x4A8aE5d48d1b54F1a50A6555acc0F0875a668a03",
+      "tx": "0x8c06971c26545ebbfc731b414a482fc14f18288f74726c9e85adc7991c6ec366",
+      "name": "CA Conviction",
+      "goalBOT": "3",
+      "raiseEnd": "2026-11-07T10:10:04.000Z",
+      "gasBOT": "0.00801092"
+    },
+    "flowBridgeBasket": {
+      "vault": "0x4b06Bcf0F7917DDb03Dd7205C1254EEEffFf3B8f",
+      "tx": "0x512834fd150d0940b700380accc738dfc827ae0a0479e10c966157a5304f24c9",
+      "name": "FlowBridge Basket",
+      "goalBOT": "3",
+      "raiseEnd": "2026-11-07T10:10:07.000Z",
+      "gasBOT": "0.00923122"
+    }
+  },
+  "legacy": {
+    "hedgerowUSDT": {
+      "note": "Hedgerow v1, funded in USDT. Superseded 2026-10-24 by the WBOT-funded HedgeFactory; no deposits were ever made.",
+      "HedgeFactory": "0x27a6ac1494a52a7e4c3e55d5b30974b398b7ea00",
+      "deployAction": {
+        "hash": "0x02df86f22d5a0b56c8fe3ab210d9951fef9a136b667ad919ab6c201a0fbab7e4",
+        "receipt": {
+          "transactionHash": "0x02df86f22d5a0b56c8fe3ab210d9951fef9a136b667ad919ab6c201a0fbab7e4",
+          "contractAddress": "0x27a6ac1494a52a7e4c3e55d5b30974b398b7ea00",
+          "blockNumber": "27571955",
+          "gasUsed": "5593424",
+          "gasPrice": "20000000000"
+        }
+      },
+      "baskets": {
+        "botChainCore": {
+          "vault": "0x94B8d2f320b4E96Fb3FA5c040E8F272B18fC31A9",
+          "tx": "0x2c24e6e1a4f01297f0ea0106be58b14c75698f0625fd45597887c83316707e21"
+        },
+        "communityTestBasket": {
+          "vault": "0xA5E8D79c05aa3Dc4ADbC5E2149A242d69833F3a2",
+          "tx": "0xbe362f95064ebd843d7cf3507361b55ac450fbbfce0e9031a117e282708f1797",
+          "goalUSDT": 6,
+          "raiseEnd": "2026-10-27T08:29:06.000Z",
+          "note": "Team-created test basket for the three-tester guide; testers deposit and claim from their own wallets."
+        }
+      }
     }
   }
 }
